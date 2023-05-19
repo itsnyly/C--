@@ -14,4 +14,5 @@ int main(){
     cout<<"\nLa teva edat és: " <<edat <<endl;
     cout<<"El teu sexe és: " <<sexe <<endl;
     cout<<"La teva altura és: " <<altura <<endl;
+    return 0;
 }
