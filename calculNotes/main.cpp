@@ -14,7 +14,7 @@ int main(){
     cout<<"Nota de pràctiques: "; cin>>notaPractiques;
     cout<<"Nota teòrica: "; cin>>notaTeorica;
     cout<<"Nota participació: "; cin>>notaParticipacio;
-    notaMitjana = ((notaPractiques * 60) / 100) + ((notaTeorica * 30) / 100) + ((notaParticipacio * 10) / 100);
+    notaMitjana = ((notaPractiques * 30) / 100) + ((notaTeorica * 60) / 100) + ((notaParticipacio * 10) / 100);
     cout<<"Nota mitjana: " <<notaMitjana <<endl;
     return 0;
 }
