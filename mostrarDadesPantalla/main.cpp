@@ -1,4 +1,4 @@
-#include <iostream>;
+#include <iostream>
 using namespace std;
 
 int main(){
@@ -11,7 +11,7 @@ int main(){
     cin>>sexe;
     cout<<"Entra la teva altura: ";
     cin>>altura;
-    cout<<"La teva edat és: " <<edat <<endl;
+    cout<<"\nLa teva edat és: " <<edat <<endl;
     cout<<"El teu sexe és: " <<sexe <<endl;
     cout<<"La teva altura és: " <<altura <<endl;
 }
