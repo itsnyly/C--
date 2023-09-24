@@ -13,6 +13,8 @@ int main()
     bool trobat = false;
 
     valor = 4;
+
+    //Cerca binaria
     inici = 0;
     final = 5;
 

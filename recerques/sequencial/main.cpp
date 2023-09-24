@@ -5,9 +5,13 @@ using namespace std;
 int main()
 {
 
-    int numeros[] = {2, 4, 3, 1, 5}, valor = 1, i = 0;
+    int numeros[] = {3, 4, 2, 1, 5}, valor, i;
     bool trobat = false;
 
+    valor = 4;
+
+    //Cerca sequencial
+    i = 0;
     while ((!trobat) && (i < 5))
     {
         if (numeros[i] == valor)
