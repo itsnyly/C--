@@ -1,0 +1,13 @@
+F1191714C Casal_El_Forn BarriVell 101.14 07 06 2012 Restauracio S
+N1223344M Moda_Mesigual BarriVell 161.6 07 09 2022 Comercial S
+B3344555M Casa_Marieta Mercadal 171.41 28 02 1892 Restauracio S
+B4455666M Mimolet BarriVell 68 17 04 2006 Restauracio S
+B8899000C Floristeria_MaTuliPa BarriVell 57.12 05 04 2018 Comercial S
+B2234455M Supermercat_Metadona Fontajau 2971.99 02 02 2015 Comercial S
+B6677888H Farmacia_Mateu Mercadal 43.21 15 10 2020 Salut S
+N1122333D McDolars SantNarcis 286.52 13 05 2010 Restauracio N
+B5566777S Gimnas_StallOne SantNarcis 266.33 06 07 2013 Esport N
+C7788999Z Zeppelin Mercadal 82.82 01 12 1984 Comercial S
+B2233445K Konig Mercadal 201.07 15 03 1974 Restauracio S
+B2233444K Konig Fontajau 772.49 03 12 2014 Restauracio S
+B3334456E Estanc_Cabats BarriVell 35.77 09 10 2005 Comercial S
