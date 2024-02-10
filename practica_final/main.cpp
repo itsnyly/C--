@@ -40,7 +40,6 @@ Activitat llegir_activitat(ifstream &f_in){
     if(not f_in.eof())
         f_in >> act.percentatge;
     return act;
-
 };
 Establiment llegir_establiment(ifstream &f_in){
     Establiment estab;
@@ -155,6 +154,7 @@ void mostrar_informacio_establiments(const Vector_establiments_n establiments){
     mostrar_titol("ESTABLIMENTS");
     for (int i = 0; i < establiments.n; i++)
     {
+
         mostrar_establiment(establiments.vec[i]);
     }
     mostrar_titol("");
@@ -240,7 +240,6 @@ void donar_alta_establiment(Vector_establiments_n& establiments, Vector_activita
         }
         else mostrar_missatge_error("NO S'HA TROBAT L'ACTIVITAT D'AQUEST ESTABLIMENT");
     }
-   
 };
 void donar_alta(Vector_activitats_n activitats, Vector_establiments_n& establiments){
     cout << "ESCOLLIR GRUP (e: ESTABLIMENTS, a: ACTIVITATS): ";
@@ -355,9 +354,7 @@ void mostrar_establiments_activitats(Vector_establiments_n establiments, Vector_
     }
     if(opcio == 'e') mostrar_informacio_establiments(establiments);
     else mostrar_establiments_activitats(establiments,activitats);
-    
 };
-
 void consultar_establiment(Vector_establiments_n establiments){
     cout << "NIF DE L'ESTABLIMENT: ";
     string nif;
@@ -371,6 +368,83 @@ void consultar_establiment(Vector_establiments_n establiments){
         mostrar_titol("");
     }
     else mostrar_missatge_error("NO S'HA TROBAT L'ESTABLIMENT");
+};
+Vector_establiments_n ordenar_establiments_per_barri(Vector_establiments_n establiments){
+    for (int i = 0; i < establiments.n; i++)
+    {
+        for (int j = i+1; j < establiments.n; j++)
+        {
+            if (establiments.vec[i].barri > establiments.vec[j].barri)
+            {
+                Establiment aux;
+                aux = establiments.vec[i];
+                establiments.vec[i] = establiments.vec[j];
+                establiments.vec[j] = aux;
+            }
+        }
+    }
+    return establiments;
+};
+Vector_establiments_n ordenar_establiments_per_antiguitat(Vector_establiments_n establiments){
+     for (int i = 0; i < establiments.n; i++)
+    {
+        for (int j = i+1; j < establiments.n; j++)
+        {
+            if (establiments.vec[i].any > establiments.vec[j].any)
+            {
+                Establiment aux;
+                aux = establiments.vec[i];
+                establiments.vec[i] = establiments.vec[j];
+                establiments.vec[j] = aux;
+            }
+        }
+    }
+    return establiments;
+};
+Vector_establiments_n ordenar_establiments_per_activitat(Vector_establiments_n establiments){
+     for (int i = 0; i < establiments.n; i++)
+    {
+        for (int j = i+1; j < establiments.n; j++)
+        {
+            if (establiments.vec[i].barri > establiments.vec[j].barri)
+            {
+                Establiment aux;
+                aux = establiments.vec[i];
+                establiments.vec[i] = establiments.vec[j];
+                establiments.vec[j] = aux;
+            }
+        }
+    }
+    return establiments;
+};
+void ordenar_establiments_segons_criteri(Vector_establiments_n establiments, char opcio, Vector_establiments_n& establiments_ordenats){
+    
+    switch (opcio)
+    {
+    case 'b':
+        establiments_ordenats = ordenar_establiments_per_barri(establiments);
+        break;
+    case 'd':
+        establiments_ordenats = ordenar_establiments_per_antiguitat(establiments);
+        break;
+    case 'a':
+        establiments_ordenats = ordenar_establiments_per_activitat(establiments);
+        break;
+    }
+    mostrar_informacio_establiments(establiments_ordenats);
+};
+
+void mostrar_establiments_ordenats(Vector_establiments_n establiments){
+    Vector_establiments_n establiments_ordenats;
+    cout << "TIPUS D'ORDRE (b: BARRI, d: ANTIGUITAT, a: ACTIVITAT): ";
+    char opcio;
+    cin >> opcio;
+    while (opcio != 'b' && opcio != 'd' && opcio != 'a')
+    {
+        cout << "TIPUS D'ORDRE (b: BARRI, d: ANTIGUITAT, a: ACTIVITAT): ";
+        cin >> opcio;
+    }
+    ordenar_establiments_segons_criteri(establiments,opcio,establiments_ordenats);
 };
 
 void menu(Vector_activitats_n activitats, Vector_establiments_n establiments){
@@ -397,7 +471,7 @@ void menu(Vector_activitats_n activitats, Vector_establiments_n establiments){
             mostrar_establiments_activitats(establiments, activitats);
             break;
         case 'o':
-            mostrar_menu_ajuda();
+            mostrar_establiments_ordenats(establiments);
             break;
         case 'n':
             mostrar_menu_ajuda();
