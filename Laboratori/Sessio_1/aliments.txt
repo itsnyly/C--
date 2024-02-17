@@ -1,0 +1,9 @@
+900_20240319 oli_verge marca_a   3 2024 03 19  oli
+900_20240318 oli_verge marca_a   60 2024 03 18  oli
+200_20240315 oli_suau marca_b  3 2024 03 15  oli
+750_20260616 tonyina_natural marca_a   8 2026 06 16  tonyina
+500_20240515 olives_grosses marca_b   3 2024 05 15  olives
+700_20240515 oli_verge marca_c   8 2024 05 15  oli
+200_20240315 oli_suau marca_b   50 2024 03 15  oli 
+500_20240310 olives_grosses marca_b   12 2024 03 10  olives
+200_20240415 oli_suau marca_b   7 2024 04 15  oli
