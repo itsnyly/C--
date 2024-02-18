@@ -27,6 +27,11 @@ struct Vector_categories_n {
     int mida_vector, total_categories;
 };
 
+void guardar_data_referencia(Data& data_referencia){
+    cout << "Entra una data (any mes dia):" << endl;
+    cin >> data_referencia.any >> data_referencia.mes >> data_referencia.dia;
+}
+
 void cerca_dicotomica_categoria(const Vector_categories_n& categories, string nom_categoria, bool& trobat, int& pos) {
 //Pre: categories.vector[0..categories.mida_vector-1] ordenat per categoria i 0<=categories.mida_vector<=MAX_CATEGORIES
 //Post: trobat és true i 0<=pos<categories.mida_vector-1 si a categories.vector[pos] hi ha la categoria nom_categoria, si a categories.vector[0..categories.mida_vector-1] no hi ha la categoria nom_categoria, trobat és false i pos és la posició on s'hauria d'inserir perquè la taula estigués ordenada per categoria
@@ -123,34 +128,64 @@ Producte llegir_producte(ifstream &f_in){
   return producte;
 }
 
-void omplir_de_fitxer(Vector_productes_n& productes, Vector_categories_n& categories) {
+void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_productes_n& productes_caducitat_llarga, Vector_categories_n& categories, Data data_caducitat_referencia) {
 //Pre: cert
 //Post: s'han omplert jugadores i paisos amb les dades del fitxer indicat per teclat i jugadores.vec[0..jugadores.n-1] està ordenat per codi de jugadora i paisos.vec[0..paisos.n-1] està ordenat per nom de país
-    productes.mida_vector=0;
+    productes_caducitat_curta.mida_vector=0;
     categories.mida_vector=0;
     string nom;
-    cout<<"NOM DEL FITXER: ";
+    cout<<"Entra el nom del fitxer:" << endl;
     cin>>nom;
     ifstream f_in(nom.c_str());
     if (f_in.is_open()) {
         Producte nou_producte=llegir_producte(f_in);
-        while (not f_in.eof() and productes.mida_vector<MAX_PRODUCTES) {
-            inserir_producte(productes,nou_producte);
+        while (not f_in.eof() and productes_caducitat_curta.mida_vector<MAX_PRODUCTES) {
+            //if(nou_producte.data_caducitat < data_caducitat_referencia)
+            inserir_producte(productes_caducitat_curta,nou_producte);
             alta_producte_categoria(categories,nou_producte.categoria,nou_producte.nombre_unitats);
             nou_producte=llegir_producte(f_in);
         }
     }
-    else cout<<"FITXER NO OBERT"<<endl;
+    else cout<<"Fitxer no trobat"<<endl;
 }
 
+void menu() {
+//Pre: cert
+//Post: mostra les opcions que té l'usuari
+    cout<<"OPCIONS:"<<endl;
+    cout<<"N -> Ordenar per nom"<<endl;
+    cout<<"D -> Ordenar per data"<<endl;
+    cout<<"A -> Actualitzar"<<endl;
+    cout<<"C -> Comanda"<<endl;
+    cout<<"M -> Menu"<<endl;
+    cout<<"S -> Sortir"<<endl;
+}
 
-
+char llegir_opcio() {
+//Pre: cert
+//Post: retorna el caràcter llegit de teclat
+    char opcio;
+    cout<<"Opcio:"<<endl;
+    cin>>opcio;
+    return opcio;
+}
 
 int main (){
-    Vector_productes_n productes_caducitat_llarga;
-    //Vector_productes_n productes_caducitat_curta;
+    Data data_referencia;
+    //Vector_productes_n productes_caducitat_llarga;
+    Vector_productes_n productes_caducitat_curta;
     Vector_categories_n categories;
-    omplir_de_fitxer(productes_caducitat_llarga,categories);
-    mostrar_productes(productes_caducitat_llarga);
+    guardar_data_referencia(data_referencia);
+    //omplir_de_fitxer(productes_caducitat_curta,categories);
+    menu();
+    /*char opcio=llegir_opcio();
+    while(opcio!='S') {
+        if(opcio=='N') ordenar_productes_per_nom(productes_caducitat_llarga);
+        else if (opcio=='D') baixa_jugadora(jugadores,paisos);
+        else if (opcio=='A') mostrar_informacio_nacionalitats(paisos);
+        else if (opcio=='C') mostrar_jugadores_per_equip(jugadores);
+        else if (opcio=='M') mostrar_jugadores(jugadores);
+        opcio=llegir_opcio();
+    }*/
     return 0;
 }
