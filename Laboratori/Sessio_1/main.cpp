@@ -10,7 +10,7 @@ struct Producte {
     int nombre_unitats;
     Data data_caducitat;
 };
-const int MAX_PRODUCTES=10000;
+const int MAX_PRODUCTES=1000;
 typedef Producte Vec_productes[MAX_PRODUCTES];
 struct Vector_productes_n {
     Vec_productes vector;
@@ -67,7 +67,7 @@ void mostrar_producte(Producte producte) {
     cout<<producte.codi<<" - "<<producte.nom<<" "<<producte.marca<<" "<<producte.nombre_unitats<<" "<<producte.data_caducitat.dia <<"-"<<producte.data_caducitat.mes<<"-"<<producte.data_caducitat.any<<" "<<producte.categoria<<endl;
 }
 
-void mostra_categoria(Categoria categoria) {
+void mostrar_categoria(Categoria categoria) {
 //Pre: cert
 //Post: mostra informació del país a per pantalla
     cout<<categoria.nom<< " - " <<categoria.unitats_recollides<<endl;
@@ -118,6 +118,13 @@ void alta_producte_categoria(Vector_categories_n& categories, string nova_catego
     //else categories.vector[pos].++;
 }
 
+bool es_caducitat_curta(const Producte producte, const Data data_referencia){
+    if(producte.data_caducitat.any < data_referencia.any) return true;
+    else if(producte.data_caducitat.any == data_referencia.any && producte.data_caducitat.mes < data_referencia.mes) return true;
+    else if (producte.data_caducitat.any == data_referencia.any && producte.data_caducitat.mes == data_referencia.mes && producte.data_caducitat.dia < data_referencia.dia) return true;
+    return false;
+}
+
 Producte llegir_producte(ifstream &f_in){
 //Pre: f_in obert apunt de llegir
 //Post: si després de la 1a lectura no s’activa f_in.eof, es llegix i retorna una jugadora de fin
@@ -132,6 +139,7 @@ void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_produ
 //Pre: cert
 //Post: s'han omplert jugadores i paisos amb les dades del fitxer indicat per teclat i jugadores.vec[0..jugadores.n-1] està ordenat per codi de jugadora i paisos.vec[0..paisos.n-1] està ordenat per nom de país
     productes_caducitat_curta.mida_vector=0;
+    productes_caducitat_llarga.mida_vector=0;
     categories.mida_vector=0;
     string nom;
     cout<<"Entra el nom del fitxer:" << endl;
@@ -140,8 +148,8 @@ void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_produ
     if (f_in.is_open()) {
         Producte nou_producte=llegir_producte(f_in);
         while (not f_in.eof() and productes_caducitat_curta.mida_vector<MAX_PRODUCTES) {
-            //if(nou_producte.data_caducitat < data_caducitat_referencia)
-            inserir_producte(productes_caducitat_curta,nou_producte);
+            if(es_caducitat_curta(nou_producte, data_caducitat_referencia))inserir_producte(productes_caducitat_curta,nou_producte);
+            else inserir_producte(productes_caducitat_llarga,nou_producte);
             alta_producte_categoria(categories,nou_producte.categoria,nou_producte.nombre_unitats);
             nou_producte=llegir_producte(f_in);
         }
@@ -172,20 +180,20 @@ char llegir_opcio() {
 
 int main (){
     Data data_referencia;
-    //Vector_productes_n productes_caducitat_llarga;
+    Vector_productes_n productes_caducitat_llarga;
     Vector_productes_n productes_caducitat_curta;
     Vector_categories_n categories;
     guardar_data_referencia(data_referencia);
-    //omplir_de_fitxer(productes_caducitat_curta,categories);
+    omplir_de_fitxer(productes_caducitat_curta,productes_caducitat_llarga,categories,data_referencia);
     menu();
-    /*char opcio=llegir_opcio();
+    char opcio=llegir_opcio();
     while(opcio!='S') {
-        if(opcio=='N') ordenar_productes_per_nom(productes_caducitat_llarga);
-        else if (opcio=='D') baixa_jugadora(jugadores,paisos);
+        if(opcio=='N')  mostrar_productes(productes_caducitat_curta);//ordenar_productes_per_nom(productes_caducitat_llarga);
+        /*else if (opcio=='D') //baixa_jugadora(jugadores,paisos);
         else if (opcio=='A') mostrar_informacio_nacionalitats(paisos);
         else if (opcio=='C') mostrar_jugadores_per_equip(jugadores);
-        else if (opcio=='M') mostrar_jugadores(jugadores);
+        else if (opcio=='M') mostrar_jugadores(jugadores);*/
         opcio=llegir_opcio();
-    }*/
+    }
     return 0;
 }
