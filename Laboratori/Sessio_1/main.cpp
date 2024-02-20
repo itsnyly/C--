@@ -64,7 +64,7 @@ void actualitzar_unitats_categoria(Vector_categories_n categories, int unitats_p
 void mostrar_producte(Producte producte) {
 //Pre: cert
 //Post: mostra la informació de la jugadora a per pantalla
-    cout<<producte.codi<<" - "<<producte.nom<<" "<<producte.marca<<" "<<producte.nombre_unitats<<" "<<producte.data_caducitat.dia <<"-"<<producte.data_caducitat.mes<<"-"<<producte.data_caducitat.any<<" "<<producte.categoria<<endl;
+    cout<<"c:"<<producte.codi<<" - "<<producte.nom<<" ("<<producte.marca<<") - n:"<<producte.nombre_unitats<<", cad:"<<producte.data_caducitat.dia<<"-"<<producte.data_caducitat.mes<<"-"<<producte.data_caducitat.any<<" ["<<producte.categoria<<"]"<<endl;
 }
 
 void mostrar_categoria(Categoria categoria) {
@@ -76,7 +76,7 @@ void mostrar_categoria(Categoria categoria) {
 void mostrar_productes(const Vector_productes_n& productes) {
 //Pre: cert
 //Post: ha mostrat la informació guardada a jugadores.vec[0..jugadores.n-1] per pantalla
-    cout<<"PRODUCTES ACTUALS: "<<endl;
+    cout<<"Llistat de productes de caducitat curta:"<<endl;
     for (int i=0; i<productes.mida_vector; i++)
         mostrar_producte(productes.vector[i]);
 }
@@ -125,6 +125,16 @@ bool es_caducitat_curta(const Producte producte, const Data data_referencia){
     return false;
 }
 
+bool es_data_diferent(const Producte producte_trobat, const Producte nou_producte ){
+    if(producte_trobat.data_caducitat.any == nou_producte.data_caducitat.any && producte_trobat.data_caducitat.mes == nou_producte.data_caducitat.mes && producte_trobat.data_caducitat.dia == nou_producte.data_caducitat.dia) return false;
+    return true;
+}
+
+void buscar_producte_repetit(const Vector_productes_n productes, const Producte nou_producte, bool& trobat, int& pos){
+    cerca_dicotomica_producte(productes, nou_producte.codi, trobat, pos);
+    if(trobat && es_data_diferent(productes.vector[pos], nou_producte)) trobat = false;
+}
+
 Producte llegir_producte(ifstream &f_in){
 //Pre: f_in obert apunt de llegir
 //Post: si després de la 1a lectura no s’activa f_in.eof, es llegix i retorna una jugadora de fin
@@ -148,8 +158,20 @@ void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_produ
     if (f_in.is_open()) {
         Producte nou_producte=llegir_producte(f_in);
         while (not f_in.eof() and productes_caducitat_curta.mida_vector<MAX_PRODUCTES) {
-            if(es_caducitat_curta(nou_producte, data_caducitat_referencia))inserir_producte(productes_caducitat_curta,nou_producte);
-            else inserir_producte(productes_caducitat_llarga,nou_producte);
+            bool trobat = false;
+            int pos;
+            if(es_caducitat_curta(nou_producte, data_caducitat_referencia))
+            {
+                buscar_producte_repetit(productes_caducitat_curta, nou_producte, trobat, pos);
+                if(trobat) ;//actualitzar_unitats_producte();
+                else inserir_producte(productes_caducitat_curta,nou_producte);
+            }
+            else 
+            {
+                buscar_producte_repetit(productes_caducitat_llarga, nou_producte, trobat, pos);
+                if(trobat) ;//actualitzar_unitats_categoria();
+                else inserir_producte(productes_caducitat_llarga,nou_producte);
+            }
             alta_producte_categoria(categories,nou_producte.categoria,nou_producte.nombre_unitats);
             nou_producte=llegir_producte(f_in);
         }
