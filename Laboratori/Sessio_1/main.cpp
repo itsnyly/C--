@@ -57,10 +57,6 @@ void inserir_categoria(Vector_categories_n& categories, string nova_categoria, i
     categories.mida_vector++;
 }
 
-void actualitzar_unitats_categoria(Vector_categories_n categories, int unitats_producte, int pos) {
-
-}
-
 void mostrar_producte(Producte producte) {
 //Pre: cert
 //Post: mostra la informació de la jugadora a per pantalla
@@ -108,14 +104,25 @@ void inserir_producte(Vector_productes_n& productes, Producte nou_producte) {
     productes.mida_vector++;
 }
 
+void eliminar_producte(Vector_productes_n& productes,int pos){
+    for (int i=pos;i<productes.mida_vector-1; i++){
+        productes.vector[i]=productes.vector[i+1];
+    }
+    productes.mida_vector--;
+}
+
 void alta_producte_categoria(Vector_categories_n& categories, string nova_categoria, int nombre_unitats_producte) {
 //Pre: paisos.n=N i 0<=N<=MAX_P i paisos[0..N-1] ordenat per nom de país
 //Post: si nou_pais no apareixia a paisos.vec[0..N-1], el nou_pais s'hi ha afegit respectant l'ordre alfabètic i paisos.n=N+1; en cas contrari, s'ha incrementat una jugadora al país corresponent
     bool trobat;
     int pos;
     cerca_dicotomica_categoria(categories,nova_categoria,trobat,pos);
-    if (not trobat) inserir_categoria(categories,nova_categoria,nombre_unitats_producte,pos);
-    //else categories.vector[pos].++;
+    if (!trobat) inserir_categoria(categories,nova_categoria,nombre_unitats_producte,pos);
+    else categories.vector[pos].unitats_recollides+=nombre_unitats_producte;
+}
+
+void actualitzar_unitats_producte(Producte& producte, const Producte producte_repetit){
+    producte.nombre_unitats+=producte_repetit.nombre_unitats;
 }
 
 bool es_caducitat_curta(const Producte producte, const Data data_referencia){
@@ -145,7 +152,24 @@ Producte llegir_producte(ifstream &f_in){
   return producte;
 }
 
-void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_productes_n& productes_caducitat_llarga, Vector_categories_n& categories, Data data_caducitat_referencia) {
+void guardar_aliments_no_repetits(Vector_productes_n& productes_caducitat_curta, Vector_productes_n& productes_caducitat_llarga, Producte nou_producte, Data data_caducitat_referencia){
+    bool trobat = false;
+    int pos;
+    if(es_caducitat_curta(nou_producte, data_caducitat_referencia))
+    {
+        buscar_producte_repetit(productes_caducitat_curta, nou_producte, trobat, pos);
+        if(trobat) actualitzar_unitats_producte(productes_caducitat_curta.vector[pos],nou_producte);
+        else inserir_producte(productes_caducitat_curta,nou_producte);
+    }
+    else 
+    {
+        buscar_producte_repetit(productes_caducitat_llarga, nou_producte, trobat, pos);
+        if(trobat) actualitzar_unitats_producte(productes_caducitat_llarga.vector[pos], nou_producte);
+        else inserir_producte(productes_caducitat_llarga,nou_producte);
+    }
+}
+
+void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_productes_n& productes_caducitat_llarga, Vector_categories_n& categories, Data data_caducitat_referencia, bool& fitxer_trobat) {
 //Pre: cert
 //Post: s'han omplert jugadores i paisos amb les dades del fitxer indicat per teclat i jugadores.vec[0..jugadores.n-1] està ordenat per codi de jugadora i paisos.vec[0..paisos.n-1] està ordenat per nom de país
     productes_caducitat_curta.mida_vector=0;
@@ -156,27 +180,63 @@ void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_produ
     cin>>nom;
     ifstream f_in(nom.c_str());
     if (f_in.is_open()) {
+        fitxer_trobat = true;
         Producte nou_producte=llegir_producte(f_in);
         while (not f_in.eof() and productes_caducitat_curta.mida_vector<MAX_PRODUCTES) {
-            bool trobat = false;
-            int pos;
-            if(es_caducitat_curta(nou_producte, data_caducitat_referencia))
-            {
-                buscar_producte_repetit(productes_caducitat_curta, nou_producte, trobat, pos);
-                if(trobat) ;//actualitzar_unitats_producte();
-                else inserir_producte(productes_caducitat_curta,nou_producte);
-            }
-            else 
-            {
-                buscar_producte_repetit(productes_caducitat_llarga, nou_producte, trobat, pos);
-                if(trobat) ;//actualitzar_unitats_categoria();
-                else inserir_producte(productes_caducitat_llarga,nou_producte);
-            }
+            guardar_aliments_no_repetits(productes_caducitat_curta,productes_caducitat_llarga,nou_producte,data_caducitat_referencia);
             alta_producte_categoria(categories,nou_producte.categoria,nou_producte.nombre_unitats);
             nou_producte=llegir_producte(f_in);
         }
     }
-    else cout<<"Fitxer no trobat"<<endl;
+    else cout<<"Fitxer no trobat";
+}
+
+void intercanvi_posicions_aliments(Producte& producte_1, Producte& producte_2){
+    Producte aux = producte_1;
+    producte_1 = producte_2;
+    producte_2 = aux;
+}
+
+void ordenar_productes_per_nom(Vector_productes_n& productes){
+    for (int i = 0; i < productes.mida_vector; i++)
+    {
+        for (int j = 1; j < productes.mida_vector; j++)
+        {
+            if(productes.vector[i].nom < productes.vector[j].nom) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
+        }
+    }
+}
+
+void ordenar_productes_per_data(Vector_productes_n& productes){
+    for (int i = 0; i < productes.mida_vector; i++)
+    {
+        for (int j = 1; j < productes.mida_vector; j++)
+        {
+            if(es_caducitat_curta(productes.vector[j], productes.vector[i].data_caducitat)) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
+        }
+    }
+}
+
+void comprovar_comanda(Vector_categories_n categories, string nom_categoria, int quantitat_comanda){
+    bool trobat = false;
+    int pos;
+    cerca_dicotomica_categoria(categories,nom_categoria,trobat,pos);
+    if(trobat)
+    {
+        if(categories.vector[pos].unitats_recollides >= quantitat_comanda) cout << "-- Es pot satisfer --"<<endl;
+        else cout << "-- No es pot satisfer --"<<endl;
+    }
+}
+
+void actualitzar_llistes_aliments(Vector_productes_n& productes_caducitat_curta, Vector_productes_n& productes_caducitat_llarga, const Data nova_data_referencia){
+    for (int i = 0; i < productes_caducitat_llarga.mida_vector; i++)
+    {
+        if(es_caducitat_curta(productes_caducitat_llarga.vector[i],nova_data_referencia)) 
+        {
+            inserir_producte(productes_caducitat_curta,productes_caducitat_llarga.vector[i]);
+            eliminar_producte(productes_caducitat_llarga,i);
+        }
+    }
 }
 
 void menu() {
@@ -206,16 +266,43 @@ int main (){
     Vector_productes_n productes_caducitat_curta;
     Vector_categories_n categories;
     guardar_data_referencia(data_referencia);
-    omplir_de_fitxer(productes_caducitat_curta,productes_caducitat_llarga,categories,data_referencia);
-    menu();
-    char opcio=llegir_opcio();
-    while(opcio!='S') {
-        if(opcio=='N')  mostrar_productes(productes_caducitat_curta);//ordenar_productes_per_nom(productes_caducitat_llarga);
-        /*else if (opcio=='D') //baixa_jugadora(jugadores,paisos);
-        else if (opcio=='A') mostrar_informacio_nacionalitats(paisos);
-        else if (opcio=='C') mostrar_jugadores_per_equip(jugadores);
-        else if (opcio=='M') mostrar_jugadores(jugadores);*/
-        opcio=llegir_opcio();
+    bool fitxer_trobat = false;
+    omplir_de_fitxer(productes_caducitat_curta,productes_caducitat_llarga,categories,data_referencia, fitxer_trobat);
+    if(fitxer_trobat){
+        menu();
+        char opcio=llegir_opcio();
+        while(opcio!='S') {
+            if(opcio=='N') 
+            {
+                ordenar_productes_per_nom(productes_caducitat_curta);
+                mostrar_productes(productes_caducitat_curta);
+            }
+            else if (opcio=='D')
+            {
+                ordenar_productes_per_data(productes_caducitat_curta);
+                mostrar_productes(productes_caducitat_curta);
+            }
+            else if (opcio=='A') 
+            {
+                cout << "Entra la nova data (any mes dia)"<<endl;
+                Data nova_data_referencia;
+                cin >> nova_data_referencia.any >> nova_data_referencia.mes >> nova_data_referencia.dia;
+                actualitzar_llistes_aliments(productes_caducitat_curta, productes_caducitat_llarga, nova_data_referencia);
+            }
+            else if (opcio=='C')
+            {
+                cout << "Categoria:" << endl;
+                string nom_categoria;
+                cin >> nom_categoria;
+                cout << "Quantitat:" <<endl;
+                int quantitat_comanda;
+                cin >> quantitat_comanda;
+                comprovar_comanda(categories,nom_categoria,quantitat_comanda);
+            }
+            else if (opcio=='M') menu();
+            opcio=llegir_opcio();
+        }
     }
+    
     return 0;
 }
