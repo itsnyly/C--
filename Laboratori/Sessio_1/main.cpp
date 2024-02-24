@@ -299,7 +299,7 @@ void opcions_menu(Vector_productes_n& productes_caducitat_curta, Vector_producte
             }
             else if (opcio=='A') 
             {
-                cout << "Entra la nova data (any mes dia)"<<endl;
+                cout << "Entra la nova data (any mes dia):"<<endl;
                 Data nova_data_referencia;
                 cin >> nova_data_referencia.any >> nova_data_referencia.mes >> nova_data_referencia.dia;
                 actualitzar_llistes_aliments(productes_caducitat_curta, productes_caducitat_llarga, nova_data_referencia);
