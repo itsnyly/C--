@@ -212,7 +212,7 @@ void ordenar_productes_per_nom(Vector_productes_n& productes){
     //Post: ordena el llistat alfabeticament per nom; si aquest és el mateix s'ordena per marca; i en cas que aquest també sigui el mateix s'ordenarà per data
     for (int i = 0; i < productes.mida_vector; i++)
     {
-        for (int j = 1; j < productes.mida_vector; j++)
+        for (int j = i+1; j < productes.mida_vector; j++)
         {
             if(productes.vector[i].nom > productes.vector[j].nom) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
             else if (productes.vector[i].nom == productes.vector[j].nom && productes.vector[i].marca > productes.vector[j].marca) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
@@ -226,7 +226,7 @@ void ordenar_productes_per_data(Vector_productes_n& productes){
     //Post: ordena el llistat alfabeticament per data; si aquest és el mateix s'ordena per nom; i en cas que aquest també sigui el mateix s'ordenarà per marca
     for (int i = 0; i < productes.mida_vector; i++)
     {
-        for (int j = 1; j < productes.mida_vector; j++)
+        for (int j = i+1; j < productes.mida_vector; j++)
         {
             if(!es_caducitat_curta(productes.vector[i], productes.vector[j].data_caducitat)) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
             else if (!es_data_diferent(productes.vector[i],productes.vector[j]) && productes.vector[i].nom > productes.vector[j].nom) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
@@ -257,6 +257,7 @@ void actualitzar_llistes_aliments(Vector_productes_n& productes_caducitat_curta,
         {
             inserir_producte(productes_caducitat_curta,productes_caducitat_llarga.vector[i]);
             eliminar_producte(productes_caducitat_llarga,i);
+            i--;
         }
     }
 }
@@ -282,18 +283,10 @@ char llegir_opcio() {
     return opcio;
 }
 
-int main (){
-    Data data_referencia;
-    Vector_productes_n productes_caducitat_llarga;
-    Vector_productes_n productes_caducitat_curta;
-    Vector_categories_n categories;
-    guardar_data_referencia(data_referencia);
-    bool fitxer_trobat = false;
-    omplir_de_fitxer(productes_caducitat_curta,productes_caducitat_llarga,categories,data_referencia, fitxer_trobat);
-    if(fitxer_trobat){
-        menu();
-        char opcio=llegir_opcio();
-        while(opcio!='S') {
+void opcions_menu(Vector_productes_n& productes_caducitat_curta, Vector_productes_n& productes_caducitat_llarga, Vector_categories_n& categories, char& opcio){
+    //Pre: opció
+    //Post: realitza les funcionalitats corresponents segons el valor de la opció
+    while(opcio!='S') {
             if(opcio=='N') 
             {
                 ordenar_productes_per_nom(productes_caducitat_curta);
@@ -324,6 +317,20 @@ int main (){
             else if (opcio=='M') menu();
             opcio=llegir_opcio();
         }
+}
+
+int main (){
+    Data data_referencia;
+    Vector_productes_n productes_caducitat_llarga;
+    Vector_productes_n productes_caducitat_curta;
+    Vector_categories_n categories;
+    guardar_data_referencia(data_referencia);
+    bool fitxer_trobat = false;
+    omplir_de_fitxer(productes_caducitat_curta,productes_caducitat_llarga,categories,data_referencia, fitxer_trobat);
+    if(fitxer_trobat){
+        menu();
+        char opcio=llegir_opcio();
+        opcions_menu(productes_caducitat_curta, productes_caducitat_llarga, categories, opcio);
     }
     else cout << "Fitxer no trobat";
     return 0;
