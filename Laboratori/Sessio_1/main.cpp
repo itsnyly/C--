@@ -227,7 +227,7 @@ void ordenar_productes_per_data(Vector_productes_n& productes){
     {
         for (int j = i+1; j < productes.mida_vector; j++)
         {
-            if(!es_caducitat_curta(productes.vector[i], productes.vector[j].data_caducitat)) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
+            if(!es_caducitat_curta(productes.vector[i], productes.vector[j].data_caducitat) && es_data_diferent(productes.vector[i], productes.vector[j])) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
             else if (!es_data_diferent(productes.vector[i],productes.vector[j]) && productes.vector[i].nom > productes.vector[j].nom) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
             else if (!es_data_diferent(productes.vector[i],productes.vector[j]) && productes.vector[i].nom == productes.vector[j].nom && productes.vector[i].marca > productes.vector[j].marca) intercanvi_posicions_aliments(productes.vector[i], productes.vector[j]);
         }
