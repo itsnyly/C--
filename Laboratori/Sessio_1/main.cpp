@@ -245,6 +245,7 @@ void comprovar_comanda(Vector_categories_n categories, string nom_categoria, int
         if(categories.vector[pos].unitats_recollides >= quantitat_comanda) cout << "-- Es pot satisfer --"<<endl;
         else cout << "-- No es pot satisfer --"<<endl;
     }
+    else cout << "-- No es pot satisfer --"<<endl;
 }
 
 void actualitzar_llistes_aliments(Vector_productes_n& productes_caducitat_curta, Vector_productes_n& productes_caducitat_llarga, const Data nova_data_referencia){
