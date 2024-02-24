@@ -196,7 +196,6 @@ void omplir_de_fitxer(Vector_productes_n& productes_caducitat_curta,Vector_produ
             nou_producte=llegir_producte(f_in);
         }
     }
-    else cout<<"Fitxer no trobat";
 }
 
 void intercanvi_posicions_aliments(Producte& producte_1, Producte& producte_2){
